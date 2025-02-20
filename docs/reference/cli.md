@@ -1718,6 +1718,24 @@ lakectl fs cat <path URI> [flags]
 
 
 
+### lakectl fs cp
+
+Copy object
+
+```
+lakectl fs cp <source path URI> <destination path URI> [flags]
+```
+
+#### Options
+{:.no_toc}
+
+```
+  -h, --help       help for cp
+      --pre-sign   Use pre-signed URLs when downloading/uploading data (recommended) (default true)
+```
+
+
+
 ### lakectl fs download
 
 Download object(s) from a given repository path
