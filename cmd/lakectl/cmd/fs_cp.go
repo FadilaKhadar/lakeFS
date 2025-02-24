@@ -16,16 +16,15 @@ var fsCpCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		srcPathURI := MustParsePathURI("source path URI", args[0])
 		destPathURI := MustParsePathURI("destination path URI", args[1])
-
 		client := getClient()
 
-		resp, err := client.CopyObject(cmd.Context(), destPathURI.Repository, destPathURI.Ref,
+		resp, err := client.CopyObjectWithResponse(cmd.Context(), destPathURI.Repository, destPathURI.Ref,
 			&apigen.CopyObjectParams{
 				DestPath: *destPathURI.Path,
 			}, apigen.CopyObjectJSONRequestBody{
 				SrcPath: *srcPathURI.Path,
+				SrcRef:  &srcPathURI.Ref,
 			})
-
 		DieOnErrorOrUnexpectedStatusCode(resp, err, http.StatusCreated)
 		os.Exit(0)
 	},
