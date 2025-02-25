@@ -1730,6 +1730,7 @@ lakectl fs cp <source path URI> <destination path URI> [flags]
 {:.no_toc}
 
 ```
+      --force      overwrite destination if it exists
   -h, --help       help for cp
       --pre-sign   Use pre-signed URLs when downloading/uploading data (recommended) (default true)
 ```
