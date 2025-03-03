@@ -742,6 +742,39 @@ func TestLakectlFsUpload(t *testing.T) {
 	})
 }
 
+func TestLakectlFsCp(t *testing.T) {
+	repoName := generateUniqueRepositoryName()
+	storage := generateUniqueStorageNamespace(repoName)
+	vars := map[string]string{
+		"REPO":    repoName,
+		"STORAGE": storage,
+		"BRANCH":  mainBranch,
+	}
+	RunCmdAndVerifySuccessWithFile(t, Lakectl()+" repo create lakefs://"+repoName+" "+storage, false, "lakectl_repo_create", vars)
+
+	originalFileName := "original-file"
+	originalPath := "lakefs://" + repoName + "/" + mainBranch + "/" + originalFileName
+	// upload file
+	vars["FILE_PATH"] = originalFileName
+	RunCmdAndVerifySuccessWithFile(t, Lakectl()+" fs upload "+originalPath+" -s files/ro_1k", false, "lakectl_fs_upload", vars)
+
+	t.Run("no_prefix", func(t *testing.T) {
+		vars["FILE_PATH"] = "copy.1"
+		RunCmdAndVerifySuccessWithFile(t, Lakectl()+" fs cp "+originalPath+" lakefs://"+repoName+"/"+mainBranch+"/"+vars["FILE_PATH"], false, "lakectl_fs_upload", vars)
+	})
+
+	t.Run("with_prefix", func(t *testing.T) {
+		vars["FILE_PATH"] = "a/prefix/copy.1"
+		RunCmdAndVerifySuccessWithFile(t, Lakectl()+" fs cp "+originalPath+" lakefs://"+repoName+"/"+mainBranch+"/"+vars["FILE_PATH"], false, "lakectl_fs_upload", vars)
+	})
+
+	t.Run("non_existing_file", func(t *testing.T) {
+		nonExistingPath := "lakefs://" + repoName + "/" + mainBranch + "/idontexist"
+
+		RunCmdAndVerifyFailure(t, Lakectl()+" fs cp "+nonExistingPath+" lakefs://"+repoName+"/"+mainBranch+"/"+vars["FILE_PATH"], false, "not found\n404 Not Found\n", map[string]string{})
+	})
+}
+
 func getStorageConfig(t *testing.T) *apigen.StorageConfig {
 	storageResp, err := client.GetStorageConfigWithResponse(context.Background())
 	if err != nil {

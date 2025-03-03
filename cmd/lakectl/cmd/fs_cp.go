@@ -26,6 +26,8 @@ var fsCpCmd = &cobra.Command{
 				SrcRef:  &srcPathURI.Ref,
 			})
 		DieOnErrorOrUnexpectedStatusCode(resp, err, http.StatusCreated)
+
+		Write(fsStatTemplate, resp.JSON201)
 		os.Exit(0)
 	},
 }
